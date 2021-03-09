@@ -1,20 +1,14 @@
 <template>
   <div class="nearby">
     <h3 class="nearby__title">附近店铺</h3>
-    <div class="nearby__item" v-for="(item,index) in iconList" :key="index">
-      <img
-        src="http://www.dell-lee.com/imgs/vue3/nearby.png"
-        alt=""
-        class="nearby__item__img"
-      />
+    <div class="nearby__item" v-for="item in iconList" :key="item.id">
+      <img :src="item.imgUrl" class="nearby__item__img" />
       <div class="nearby__content">
-        <div class="nearby__content__title">沃尔玛</div>
+        <div class="nearby__content__title">{{item.title}}</div>
         <div class="nearby__content__tags">
-          <span class="nearby__content__tag">月售1万+</span>
-          <span class="nearby__content__tag">月售1万+</span>
-          <span class="nearby__content__tag">月售1万+</span>
+          <span class="nearby__content__tag" v-for="(innerItem, innerIndex) in item.tags" :key="innerIndex">{{innerItem}}</span>
         </div>
-        <p class="nearby__content__highlight">VIP尊享满89元减4元运费</p>
+        <p class="nearby__content__highlight">{{item.desc}}</p>
       </div>
     </div>
   </div>
@@ -24,16 +18,31 @@ export default {
   name: 'Nearby',
   setup () {
     const iconList = [
-      { icon: '超市', desc: '超市便利' },
-      { icon: '菜市场', desc: '菜市场' },
-      { icon: '水果店', desc: '水果店' },
-      { icon: '鲜花', desc: '鲜花绿植' },
-      { icon: '医药健康', desc: '医药健康' },
-      { icon: '家居', desc: '家居时尚' },
-      { icon: '蛋糕', desc: '烘培蛋糕' },
-      { icon: '签到', desc: '签到' },
-      { icon: '大牌免运', desc: '大牌免运' },
-      { icon: '红包', desc: '红包套餐' }
+      {
+        id: 1,
+        imgUrl: 'http://www.dell-lee.com/imgs/vue3/nearby.png',
+        title: '沃尔玛',
+        tags: ['月售1万+', '起送￥0', '基础运费￥5'],
+        desc: 'VIP尊享满89元减4元运费'
+      }, {
+        id: 2,
+        imgUrl: 'http://www.dell-lee.com/imgs/vue3/nearby.png',
+        title: '沃尔玛',
+        tags: ['月售1万+', '起送￥0', '基础运费￥5'],
+        desc: 'VIP尊享满89元减4元运费'
+      }, {
+        id: 3,
+        imgUrl: 'http://www.dell-lee.com/imgs/vue3/nearby.png',
+        title: '沃尔玛',
+        tage: ['月售1万+', '起送￥0', '基础运费￥5'],
+        desc: 'VIP尊享满89元减4元运费'
+      }, {
+        id: 4,
+        imgUrl: 'http://www.dell-lee.com/imgs/vue3/nearby.png',
+        title: '沃尔玛',
+        tags: ['月售1万+', '起送￥0', '基础运费￥5'],
+        desc: 'VIP尊享满89元减4元运费'
+      }
     ]
     return { iconList }
   }
@@ -60,7 +69,7 @@ export default {
   &__content {
     flex: 1;
     border-bottom: 1px solid $gray-bgColor;
-    padding-bottom: .12rem;
+    padding-bottom: 0.12rem;
     &__title {
       line-height: 0.22rem;
       font-size: 0.16rem;
