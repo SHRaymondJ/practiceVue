@@ -7,19 +7,28 @@
     <div class="wrapper__input">
       <input type="text" class="wrapper__input__content" placeholder="请输入密码" />
     </div>
-    <div class="wrapper__login-button">登陆</div>
+    <div class="wrapper__login-button" @click="handleLogin">登陆</div>
     <div class="wrapper__login-link"><span>立即注册</span><span>忘记密码</span></div>
   </div>
 </template>
 
 <script>
+import { useRouter } from 'vue-router'
 export default {
-  name: 'Login'
+  name: 'Login',
+  setup () {
+    const router = useRouter() // useRouter提供了路由实例
+    const handleLogin = () => {
+      localStorage.isLogin = true
+      router.push({ name: 'Home' }) // 通过router.push()跳转页面
+    }
+    return { handleLogin }
+  }
 }
 </script>
 
 <style lang="scss" scoped>
-@import '../../style/variables.scss';
+@import "../../style/variables.scss";
 .wrapper {
   position: absolute;
   top: 50%;
@@ -53,24 +62,24 @@ export default {
       }
     }
   }
-  &__login-button{
-    margin: 0.32rem .4rem .16rem .4rem;
-    line-height: .48rem;
+  &__login-button {
+    margin: 0.32rem 0.4rem 0.16rem 0.4rem;
+    line-height: 0.48rem;
     background: #0091ff;
-    box-shadow: 0 .04rem .08rem 0 rgba(0,145,255,0.32);
-    border-radius: .04rem;
+    box-shadow: 0 0.04rem 0.08rem 0 rgba(0, 145, 255, 0.32);
+    border-radius: 0.04rem;
     color: #fff;
-    font-size: .16rem;
+    font-size: 0.16rem;
     text-align: center;
   }
-  &__login-link{
-    font-size: .14rem;
+  &__login-link {
+    font-size: 0.14rem;
     text-align: center;
     color: $content-notice-fc;
-    span{
-      padding: 0 .1rem;
+    span {
+      padding: 0 0.1rem;
       border-right: 1px solid $content-notice-fc;
-      &:last-child{
+      &:last-child {
         border-right: none;
       }
     }
