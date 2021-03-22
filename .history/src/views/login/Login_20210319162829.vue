@@ -1,4 +1,3 @@
-/* eslint-disable object-property-newline */
 <template>
   <div class="wrapper">
     <img src="http://www.dell-lee.com/imgs/vue3/user.png" alt="" class="wrapper__img" />
@@ -7,7 +6,7 @@
         type="text"
         class="wrapper__input__content"
         placeholder="请输入用户名"
-        v-model="username"
+        v-model="data.username"
       />
     </div>
     <div class="wrapper__input">
@@ -15,8 +14,7 @@
         type="password"
         class="wrapper__input__content"
         placeholder="请输入密码"
-        v-model="password"
-        autocomplete="new-password"
+        v-model="data.password"
       />
     </div>
     <div class="wrapper__login-button" @click="handleLogin">登陆</div>
@@ -33,54 +31,44 @@ import { useRouter } from 'vue-router'
 import { post } from '../../utils/request'
 import Toast, { useToastEffect } from '../../components/Toast'
 
-const useLoginEffect = (showToast) => {
-  const router = useRouter() // useRouter提供了路由实例
-
-  const data = reactive({
-    username: '',
-    password: ''
-  })
-  const handleLogin = async () => {
-    try {
-      const result = await post('/api/user/login', {
-        username: data.username,
-        password: data.password
-      })
-      if (result?.errno === 0) {
-        localStorage.isLogin = true
-        router.push({ name: 'Home' }) // 通过router.push()跳转页面
-      } else {
-        showToast('登陆失败')
-      }
-    } catch (e) {
-      showToast('请求错误')
-    }
-  }
-
-  const { username, password } = toRefs(data)
-
-  return { username, password, handleLogin }
-}
-
 export default {
   name: 'Login',
   components: { Toast },
-  // 代码执行的流程
   setup () {
     const router = useRouter() // useRouter提供了路由实例
-
+    const data = reactive({
+      username: '',
+      password: ''
+    })
     const { show, toastMessage, showToast } = useToastEffect()
-    const { username, password, handleLogin } = useLoginEffect(showToast)
-
+    const handleLogin = async () => {
+      try {
+        const result = await post('/api/user/login', {
+          username: data.username,
+          password: data.password
+        })
+        if (result?.errno === 0) {
+          localStorage.isLogin = true
+          router.push({ name: 'Home' }) // 通过router.push()跳转页面
+        } else {
+          showToast('登陆失败')
+        }
+      } catch (e) {
+        showToast('请求错误')
+      }
+    }
     const handleRegisterClick = () => {
       router.push({ name: 'Register' })
     }
+    const { username, password } = toRefs(data)
 
     return {
-      // eslint-disable-next-line object-property-newline
-      username, password, handleLogin,
-      // eslint-disable-next-line object-property-newline
-      handleRegisterClick, show, toastMessage
+      username,
+      password,
+      handleLogin,
+      handleRegisterClick,
+      show,
+      toastMessage
     }
   }
 }

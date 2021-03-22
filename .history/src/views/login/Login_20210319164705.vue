@@ -16,7 +16,6 @@
         class="wrapper__input__content"
         placeholder="请输入密码"
         v-model="password"
-        autocomplete="new-password"
       />
     </div>
     <div class="wrapper__login-button" @click="handleLogin">登陆</div>

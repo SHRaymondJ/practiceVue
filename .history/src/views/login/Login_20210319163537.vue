@@ -7,7 +7,7 @@
         type="text"
         class="wrapper__input__content"
         placeholder="请输入用户名"
-        v-model="username"
+        v-model="data.username"
       />
     </div>
     <div class="wrapper__input">
@@ -15,8 +15,7 @@
         type="password"
         class="wrapper__input__content"
         placeholder="请输入密码"
-        v-model="password"
-        autocomplete="new-password"
+        v-model="data.password"
       />
     </div>
     <div class="wrapper__login-button" @click="handleLogin">登陆</div>
