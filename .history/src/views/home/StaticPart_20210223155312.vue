@@ -70,12 +70,12 @@ export default {
   position: relative;
   line-height: 0.32rem;
   margin-bottom: 0.12rem;
-  font-size: $input-fs;
-  color: $search-color;
+  font-size: 0.14rem;
+  color: #b7b7b7;
   &__input {
     height: 0.32rem;
     line-height: 0.32rem;
-    background: $content-bgColor;
+    background: #f5f5f5;
     border-radius: 16px;
     padding-left: 0.44rem;
     outline: none;

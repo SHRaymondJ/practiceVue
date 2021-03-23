@@ -70,7 +70,6 @@ export default {
   position: relative;
   line-height: 0.32rem;
   margin-bottom: 0.12rem;
-  font-size: $input-fs;
   color: $search-color;
   &__input {
     height: 0.32rem;
@@ -81,6 +80,7 @@ export default {
     outline: none;
     border: none;
     width: 100%;
+    font-size: $input-fs;
     box-sizing: border-box;
   }
   .search__icon {

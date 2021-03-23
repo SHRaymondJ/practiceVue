@@ -2,8 +2,8 @@
   <div class="nearby">
     <h3 class="nearby__title">附近店铺</h3>
     <router-link
+      to="/Shop"
       v-for="item in nearbyList"
-      :to="`/Shop/${item._id}`"
       :key="item._id"
       v-show="item.imgUrl"
     >
@@ -12,31 +12,30 @@
   </div>
 </template>
 <script>
-import { ref } from 'vue'
-import { get } from '../../utils/request'
-import ShopInfo from '../../components/ShopInfo'
+import { ref } from "vue";
+import { get } from "../../utils/request";
+import ShopInfo from "../../components/ShopInfo";
 
-// 获得附近
 const useNearbyListEffect = () => {
-  const nearbyList = ref([])
+  const nearbyList = ref([]);
   const getNearbyList = async () => {
-    const result = await get('/api/shop/hot-list')
-    console.log(result)
+    const result = await get("/api/shop/hot-list");
+    console.log(result);
     if (result?.errno === 0 && result?.data?.length) {
-      nearbyList.value = result.data
+      nearbyList.value = result.data;
     }
-  }
-  return { nearbyList, getNearbyList }
-}
+  };
+  return { nearbyList, getNearbyList };
+};
 export default {
-  name: 'Nearby',
+  name: "Nearby",
   components: { ShopInfo },
-  setup () {
-    const { nearbyList, getNearbyList } = useNearbyListEffect()
-    getNearbyList()
-    return { nearbyList }
-  }
-}
+  setup() {
+    const { nearbyList, getNearbyList } = useNearbyListEffect();
+    getNearbyList();
+    return { nearbyList };
+  },
+};
 </script>
 <style lang="scss" scoped>
 @import "../../style/variables.scss";
@@ -46,9 +45,6 @@ export default {
     margin: 0.16rem 0 0.02rem 0;
     font-size: 0.18rem;
     color: $content-fc;
-  }
-  a{
-    text-decoration: none;
   }
 }
 </style>

@@ -1,14 +1,12 @@
 <template>
   <div class="nearby">
     <h3 class="nearby__title">附近店铺</h3>
-    <router-link
+    <ShopInfo
       v-for="item in nearbyList"
-      :to="`/Shop/${item._id}`"
       :key="item._id"
       v-show="item.imgUrl"
-    >
-      <ShopInfo :item="item" />
-    </router-link>
+      :item="item"
+    />
   </div>
 </template>
 <script>
@@ -16,7 +14,6 @@ import { ref } from 'vue'
 import { get } from '../../utils/request'
 import ShopInfo from '../../components/ShopInfo'
 
-// 获得附近
 const useNearbyListEffect = () => {
   const nearbyList = ref([])
   const getNearbyList = async () => {
@@ -47,8 +44,9 @@ export default {
     font-size: 0.18rem;
     color: $content-fc;
   }
-  a{
-    text-decoration: none;
+  &__item {
+    display: flex;
+    padding-top: 0.12rem;
   }
 }
 </style>

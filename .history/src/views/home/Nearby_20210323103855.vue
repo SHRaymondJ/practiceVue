@@ -2,8 +2,8 @@
   <div class="nearby">
     <h3 class="nearby__title">附近店铺</h3>
     <router-link
+      to="/Shop"
       v-for="item in nearbyList"
-      :to="`/Shop/${item._id}`"
       :key="item._id"
       v-show="item.imgUrl"
     >
@@ -16,7 +16,6 @@ import { ref } from 'vue'
 import { get } from '../../utils/request'
 import ShopInfo from '../../components/ShopInfo'
 
-// 获得附近
 const useNearbyListEffect = () => {
   const nearbyList = ref([])
   const getNearbyList = async () => {

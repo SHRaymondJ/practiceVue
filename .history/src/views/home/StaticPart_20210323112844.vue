@@ -70,7 +70,7 @@ export default {
   position: relative;
   line-height: 0.32rem;
   margin-bottom: 0.12rem;
-  font-size: $input-fs;
+  font-size: 0.14rem;
   color: $search-color;
   &__input {
     height: 0.32rem;
