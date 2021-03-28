@@ -50,7 +50,7 @@ export default {
   display: flex;
   justify-content: space-around;
   color: $content-fc;
-  background:#ffffff;
+  background:$bgColor;
   &__item {
     flex: 1;
     text-align: center;
