@@ -36,7 +36,7 @@
             class="product__number__minus"
             @click="changeCartItemInfo(shopId, item._id, item, -1)"
           >-</span>
-          {{ item.count || 0 }}
+          {{ cartList?.[shopId]?.[item._id]?.count || 0 }}
           <span
             class="product__number__plus"
             @click="changeCartItemInfo(shopId, item._id, item, 1)"
@@ -51,8 +51,8 @@
 <script>
 import { reactive, toRefs, ref, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
+import { useStore } from 'vuex'
 import { get } from '../../utils/request'
-import { useCommonCartEffect } from './commonCartEffect'
 
 const categories = [
   { name: '全部商品', tab: 'all' },
@@ -90,6 +90,19 @@ const useCurrentListEffect = (currentTab, shopId) => {
   return { getContentData, contentList }
 }
 
+// 购物车相关逻辑，调用store的state属性
+const useCartEffect = () => {
+  const store = useStore()
+  // 操作store的值，用store.commit调用mutation的方法
+  const { cartList } = toRefs(store.state)
+  const changeCartItemInfo = (shopId, productId, productInfo, count) => {
+    store.commit('changeCartItemInfo', {
+      shopId, productId, productInfo, count
+    })
+  }
+  return { cartList, changeCartItemInfo }
+}
+
 export default {
   name: 'Content',
   setup () {
@@ -97,7 +110,7 @@ export default {
     const shopId = route.params.id
     const { handleCategoryClick, currentTab } = useTabEffect()
     const { contentList } = useCurrentListEffect(currentTab, shopId)
-    const { changeCartItemInfo } = useCommonCartEffect()
+    const { cartList, changeCartItemInfo, minusItemFromCart } = useCartEffect()
 
     return {
       contentList,
@@ -105,7 +118,9 @@ export default {
       currentTab,
       categories,
       shopId,
-      changeCartItemInfo
+      cartList,
+      changeCartItemInfo,
+      minusItemFromCart
     }
   }
 }

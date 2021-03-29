@@ -1,31 +1,29 @@
 <template>
-  <div class="content">
-    <ul class="content__category">
-      <li
-        v-for="category in categories"
-        :key="category.tab"
-        :class="{
-          content__item: true,
-          'content__item--active': category.tab === currentTab,
-        }"
-        @click="handleCategoryClick(category.tab)"
-      >
-        {{ category.name }}
-      </li>
-    </ul>
-    <div class="products">
-      <div
-        v-for="item in contentList"
-        :key="item._id"
-        class="products__item"
-        v-show="item.imgUrl"
-      >
+  <div class="cart">
+    <div class="cart__basket">
+      <span class="cart__basket__number">{{ total }}</span>
+      <img class="cart__basket__img" src="../../assets/shop/basket.svg" alt="" />
+    </div>
+    <div class="cart__priceBox">
+      <div class="cart__price">
+        总计：
+        <span class="cart__price__number">&yen;{{ price }}</span>
+      </div>
+      <div class="cart__button">去结算</div>
+    </div>
+  </div>
+  <div class="products">
+    <template
+      v-for="item in productList"
+      :key="item._id"
+      v-show="item.imgUrl"
+    >
+      <div class="products__item" v-if="item.count > 0">
         <img class="products__item__img" :src="item.imgUrl" alt="" />
         <div class="products__item__detail">
           <h4 class="products__item__tittle">
             {{ item.name }}
           </h4>
-          <p class="products__item__sales">月售{{ item.sales }}件</p>
           <p class="products__item__price">
             <span class="products__item__yen">&yen;</span>{{ item.price }}
             <span class="products__item__origin">&yen;{{ item.oldPrice }}</span>
@@ -35,7 +33,8 @@
           <span
             class="product__number__minus"
             @click="changeCartItemInfo(shopId, item._id, item, -1)"
-          >-</span>
+            >-</span
+          >
           {{ item.count || 0 }}
           <span
             class="product__number__plus"
@@ -44,69 +43,58 @@
           >
         </div>
       </div>
-    </div>
+    </template>
   </div>
 </template>
 
 <script>
-import { reactive, toRefs, ref, watchEffect } from 'vue'
+import { useStore } from 'vuex'
 import { useRoute } from 'vue-router'
-import { get } from '../../utils/request'
+import { computed } from 'vue'
 import { useCommonCartEffect } from './commonCartEffect'
 
-const categories = [
-  { name: '全部商品', tab: 'all' },
-  { name: '秒杀', tab: 'seckill' },
-  { name: '新鲜水果', tab: 'fruit' }
-]
-// 分类切换相关的逻辑
-const useTabEffect = (getContentData) => {
-  const currentTab = ref(categories[0].tab)
-  const handleCategoryClick = (tab) => {
-    currentTab.value = tab
-  }
-
-  return { categories, handleCategoryClick, currentTab }
-}
-
-// 列表内容相关的逻辑
-const useCurrentListEffect = (currentTab, shopId) => {
-  const content = reactive({ contentList: [] })
-  const getContentData = async () => {
-    const result = await get(`/api/shop/${shopId}/products`, {
-      tab: currentTab.value // 这个是依赖项
-    })
-    if (result?.errno === 0 && result?.data?.length) {
-      content.contentList = result.data
+// 获取购物车信息逻辑
+const useCartEffect = (shopId) => {
+  const store = useStore()
+  const cartList = store.state.cartList
+  // 计算属性监控值
+  const total = computed(() => {
+    const productList = cartList[shopId]
+    let count = 0
+    if (productList) {
+      for (const i in productList) {
+        const product = productList[i]
+        count += product.count
+      }
     }
-  }
-
-  // 监听函数内依赖项的变化，对页面进行渲染
-  watchEffect(() => {
-    getContentData()
+    return count
   })
-  const { contentList } = toRefs(content)
-
-  return { getContentData, contentList }
+  const price = computed(() => {
+    const productList = cartList[shopId]
+    let count = 0
+    if (productList) {
+      for (const i in productList) {
+        const product = productList[i]
+        count += product.count * product.price
+      }
+    }
+    return count.toFixed(2)
+  })
+  const productList = computed(() => {
+    const productList = cartList[shopId] || []
+    return productList
+  })
+  return { total, price, productList }
 }
 
 export default {
-  name: 'Content',
+  name: 'Cart',
   setup () {
     const route = useRoute()
     const shopId = route.params.id
-    const { handleCategoryClick, currentTab } = useTabEffect()
-    const { contentList } = useCurrentListEffect(currentTab, shopId)
     const { changeCartItemInfo } = useCommonCartEffect()
-
-    return {
-      contentList,
-      handleCategoryClick,
-      currentTab,
-      categories,
-      shopId,
-      changeCartItemInfo
-    }
+    const { total, price, productList } = useCartEffect(shopId)
+    return { total, price, productList, changeCartItemInfo, shopId }
   }
 }
 </script>
@@ -114,34 +102,77 @@ export default {
 <style lang="scss" scoped>
 @import "../../style/variables.scss";
 @import "../../style/mixins.scss";
-.content {
+
+.cart {
   display: flex;
   position: absolute;
-  top: 1.7rem;
   left: 0;
   right: 0;
-  bottom: 0.5rem;
-  &__category {
+  bottom: 0;
+  width: 100%;
+  height: 0.49rem;
+  border-top: 1px solid $gray-bgColor;
+  background: $bgColor;
+  &__basket {
+    position: relative;
+    display: flex;
     width: 20%;
-    height: 100%;
-    overflow-y: scroll;
-    font-size: 0.14rem;
-    text-align: center;
-    background-color: $content-bgColor;
-  }
-  &__item {
-    line-height: 0.4rem;
-    @include ellipsis;
-    &--active {
-      background-color: $bgColor;
+    align-items: center;
+    &__img {
+      width: 0.28rem;
+      height: 0.26rem;
+      display: block;
+      margin: 0 auto;
     }
+    &__number {
+      position: absolute;
+      min-width: 0.24rem;
+      height: 0.24rem;
+      left: 0.5rem;
+      top: 0.01rem;
+      color: $bgColor;
+      background-color: $highlight-fontColor;
+      font-size: 0.14rem;
+      text-align: center;
+      line-height: 0.24rem;
+      border-radius: 0.1rem;
+      transform: scale(0.5);
+      transform-origin: left center;
+    }
+  }
+  &__priceBox {
+    display: flex;
+    justify-content: space-between;
+    flex: 1;
+  }
+  &__price {
+    font-size: 0.12rem;
+    color: $content-fc;
+    line-height: 0.5rem;
+    padding-left: 0.08rem;
+    &__number {
+      font-size: 0.18rem;
+      color: $highlight-fontColor;
+    }
+  }
+  &__button {
+    width: 0.98rem;
+    height: 100%;
+    background-color: $submit-bgColor;
+    color: white;
+    font-size: 0.14rem;
+    line-height: 0.49rem;
+    text-align: center;
   }
 }
 
 .products {
-  flex: 1;
   background-color: $bgColor;
   overflow-y: scroll;
+  width: 100%;
+  position: absolute;
+  bottom: 0.5rem;
+  left: 0;
   &__item {
     position: relative;
     display: flex;
