@@ -14,10 +14,5 @@ export const useCommonCartEffect = () => {
       shopId
     })
   }
-  const chooseAll = (shopId, allChecked) => {
-    store.commit('chooseAll', {
-      shopId, allChecked
-    })
-  }
-  return { changeCartItemInfo, clearCart, chooseAll }
+  return { changeCartItemInfo, clearCart }
 }

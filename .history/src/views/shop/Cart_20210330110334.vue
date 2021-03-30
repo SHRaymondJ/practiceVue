@@ -14,8 +14,8 @@
   </div>
   <div class="products">
     <div class="products__all" v-if="total > 0">
-      <div class="products__all__box" @click="chooseAll(shopId, allChecked)">
-        <span class="products__all__choose iconfont" v-html="allChecked ? '&#xe626;':'&#xe625;'"></span>
+      <div class="products__all__box" @click="chooseAll(shopId, choose)">
+        <span class="products__all__choose iconfont" v-html="cartTotal === total ? '&#xe626;':'&#xe625;'"></span>
         <span class="products__all__text">全选</span>
       </div>
       <div class="products__all__box" @click="clearCart(shopId)">
@@ -66,8 +66,7 @@ import { useCommonCartEffect } from './commonCartEffect'
 // 获取购物车信息逻辑
 const useCartEffect = (shopId) => {
   const store = useStore()
-  const cartList = store.state.cartList
-  const { changeCartItemInfo, clearCart, chooseAll } = useCommonCartEffect()
+  const { changeCartItemInfo, clearCart, chooseAll, cartList } = useCommonCartEffect()
   const changeCartItemChecked = (productId) => {
     store.commit('changeCartItemChecked', {
       shopId,
@@ -108,7 +107,7 @@ const useCartEffect = (shopId) => {
     }
     return count
   })
-  const allChecked = computed(() => {
+  const choose = computed(() => {
     console.log(cartTotal.value, total.value)
     return cartTotal.value === total.value
   })
@@ -117,7 +116,7 @@ const useCartEffect = (shopId) => {
     const productList = cartList[shopId] || []
     return productList
   })
-  return { total, price, productList, cartTotal, cartList, changeCartItemInfo, changeCartItemChecked, clearCart, chooseAll, allChecked }
+  return { total, price, productList, cartTotal, cartList, changeCartItemInfo, changeCartItemChecked, clearCart, chooseAll, choose }
 }
 
 export default {
@@ -135,7 +134,7 @@ export default {
       changeCartItemChecked,
       clearCart,
       chooseAll,
-      allChecked
+      choose
     } = useCartEffect(shopId)
     return {
       total,
@@ -148,7 +147,7 @@ export default {
       changeCartItemChecked,
       clearCart,
       chooseAll,
-      allChecked
+      choose
     }
   }
 }

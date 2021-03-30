@@ -29,12 +29,10 @@ export default createStore({
       if (!product) {
         product = productInfo
         product.count = 0
-        product.check = false
-      }
-      if (product.count === 0) {
-        product.check = false
       }
       product.count += count
+      product.check = false
+
       if (product.count < 0) { product.count = 0 }
       shop[productId] = product
       cartList[shopId] = shop
@@ -44,22 +42,6 @@ export default createStore({
       const product = state.cartList[shopId][productId]
       product.check = !product.check
       state.cartList[shopId][productId] = product
-    },
-    clearCart (state, payload) {
-      const { shopId } = payload
-      state.cartList[shopId] = {}
-    },
-    chooseAll (state, payload) {
-      const { shopId, allChecked } = payload
-      const shop = state.cartList[shopId]
-      for (const productId in shop) {
-        const product = shop[productId]
-        if (product.count > 0) {
-          product.check = !allChecked
-        }
-        shop[productId] = product
-      }
-      state.cartList[shopId] = shop
     }
   },
   actions: {

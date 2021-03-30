@@ -47,18 +47,12 @@ export default createStore({
     },
     clearCart (state, payload) {
       const { shopId } = payload
-      state.cartList[shopId] = {}
-    },
-    chooseAll (state, payload) {
-      const { shopId, allChecked } = payload
       const shop = state.cartList[shopId]
-      for (const productId in shop) {
-        const product = shop[productId]
-        if (product.count > 0) {
-          product.check = !allChecked
-        }
-        shop[productId] = product
+      for (const product in shop) {
+        product.check = false
+        product.count = 0
       }
+      console.log(shop)
       state.cartList[shopId] = shop
     }
   },

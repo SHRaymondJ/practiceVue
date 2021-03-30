@@ -1,7 +1,7 @@
 <template>
   <div class="cart">
     <div class="cart__basket">
-      <span class="cart__basket__number">{{ cartTotal }}</span>
+      <span class="cart__basket__number">{{ total }}</span>
       <img class="cart__basket__img" src="../../assets/shop/basket.svg" alt="" />
     </div>
     <div class="cart__priceBox">
@@ -13,22 +13,10 @@
     </div>
   </div>
   <div class="products">
-    <div class="products__all" v-if="total > 0">
-      <div class="products__all__box" @click="chooseAll(shopId, allChecked)">
-        <span class="products__all__choose iconfont" v-html="allChecked ? '&#xe626;':'&#xe625;'"></span>
-        <span class="products__all__text">全选</span>
-      </div>
-      <div class="products__all__box" @click="clearCart(shopId)">
-        <span class="products__all__clear">清空购物车</span>
-      </div>
-    </div>
+    <div class="products__all"></div>
     <template v-for="item in productList" :key="item._id" v-show="item.imgUrl">
       <div class="products__item" v-if="item.count > 0">
-        <span
-          class="products__choose iconfont"
-          v-html="item.check ? '&#xe626;' : '&#xe625;'"
-          @click="changeCartItemChecked(item._id)"
-        ></span>
+        <div class="products__choose">&#xe626;</div>
         <img class="products__item__img" :src="item.imgUrl" alt="" />
         <div class="products__item__detail">
           <h4 class="products__item__tittle">
@@ -45,7 +33,7 @@
             @click="changeCartItemInfo(shopId, item._id, item, -1)"
             >-</span
           >
-          {{ cartList?.[shopId]?.[item._id]?.count || 0 }}
+          {{ item.count || 0 }}
           <span
             class="product__number__plus"
             @click="changeCartItemInfo(shopId, item._id, item, 1)"
@@ -67,13 +55,7 @@ import { useCommonCartEffect } from './commonCartEffect'
 const useCartEffect = (shopId) => {
   const store = useStore()
   const cartList = store.state.cartList
-  const { changeCartItemInfo, clearCart, chooseAll } = useCommonCartEffect()
-  const changeCartItemChecked = (productId) => {
-    store.commit('changeCartItemChecked', {
-      shopId,
-      productId
-    })
-  }
+  const { changeCartItemInfo } = useCommonCartEffect()
   // 计算属性监控值
   const total = computed(() => {
     const productList = cartList[shopId]
@@ -92,32 +74,16 @@ const useCartEffect = (shopId) => {
     if (productList) {
       for (const i in productList) {
         const product = productList[i]
-        count += product.check ? product.count * product.price : 0
+        count += product.count * product.price
       }
     }
     return count.toFixed(2)
   })
-  const cartTotal = computed(() => {
-    const productList = cartList[shopId]
-    let count = 0
-    if (productList) {
-      for (const i in productList) {
-        const product = productList[i]
-        count += product.check ? product.count : 0
-      }
-    }
-    return count
-  })
-  const allChecked = computed(() => {
-    console.log(cartTotal.value, total.value)
-    return cartTotal.value === total.value
-  })
-
   const productList = computed(() => {
     const productList = cartList[shopId] || []
     return productList
   })
-  return { total, price, productList, cartTotal, cartList, changeCartItemInfo, changeCartItemChecked, clearCart, chooseAll, allChecked }
+  return { total, price, productList, changeCartItemInfo }
 }
 
 export default {
@@ -125,31 +91,8 @@ export default {
   setup () {
     const route = useRoute()
     const shopId = route.params.id
-    const {
-      total,
-      price,
-      productList,
-      cartTotal,
-      cartList,
-      changeCartItemInfo,
-      changeCartItemChecked,
-      clearCart,
-      chooseAll,
-      allChecked
-    } = useCartEffect(shopId)
-    return {
-      total,
-      price,
-      productList,
-      cartTotal,
-      cartList,
-      changeCartItemInfo,
-      shopId,
-      changeCartItemChecked,
-      clearCart,
-      chooseAll,
-      allChecked
-    }
+    const { total, price, productList, changeCartItemInfo } = useCartEffect(shopId)
+    return { total, price, productList, changeCartItemInfo, shopId }
   }
 }
 </script>
@@ -228,29 +171,6 @@ export default {
   position: absolute;
   bottom: 0.5rem;
   left: 0;
-  &__all {
-    font-size: 0.14rem;
-    display: flex;
-    justify-content: space-between;
-    padding: 0.12rem 0.16rem;
-    &__box {
-      display: flex;
-      align-items: center;
-    }
-    &__text {
-      margin-left: 0.05rem;
-    }
-    &__choose {
-      color: $btn-bgColor;
-      line-height: 0.3rem;
-      font-size: 0.24rem;
-    }
-  }
-  &__choose {
-    color: $btn-bgColor;
-    line-height: 0.68rem;
-    font-size: 0.24rem;
-  }
   &__item {
     position: relative;
     display: flex;
@@ -260,13 +180,10 @@ export default {
     &__img {
       width: 0.68rem;
       height: 0.68rem;
-      margin: 0 0.16rem;
+      margin-right: 0.16rem;
     }
     &__detail {
       overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
     }
     &__tittle {
       margin: 0;
@@ -300,7 +217,7 @@ export default {
     .product__number {
       position: absolute;
       right: 0;
-      bottom: 0.34rem;
+      bottom: 0.12rem;
       font-size: 0.14rem;
       &__minus,
       &__plus {

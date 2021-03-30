@@ -14,7 +14,7 @@
   </div>
   <div class="products">
     <div class="products__all" v-if="total > 0">
-      <div class="products__all__box" @click="chooseAll(shopId, allChecked)">
+      <div class="products__all__box" @click="chooseAll(shopId, choose)">
         <span class="products__all__choose iconfont" v-html="allChecked ? '&#xe626;':'&#xe625;'"></span>
         <span class="products__all__text">全选</span>
       </div>

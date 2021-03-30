@@ -1,7 +1,7 @@
 <template>
   <div class="cart">
     <div class="cart__basket">
-      <span class="cart__basket__number">{{ cartTotal }}</span>
+      <span class="cart__basket__number">{{ total }}</span>
       <img class="cart__basket__img" src="../../assets/shop/basket.svg" alt="" />
     </div>
     <div class="cart__priceBox">
@@ -13,12 +13,12 @@
     </div>
   </div>
   <div class="products">
-    <div class="products__all" v-if="total > 0">
-      <div class="products__all__box" @click="chooseAll(shopId, allChecked)">
-        <span class="products__all__choose iconfont" v-html="allChecked ? '&#xe626;':'&#xe625;'"></span>
+    <div class="products__all">
+      <div class="products__all__box">
+        <span class="products__all__choose iconfont">&#xe626;</span>
         <span class="products__all__text">全选</span>
       </div>
-      <div class="products__all__box" @click="clearCart(shopId)">
+      <div class="products__all__box">
         <span class="products__all__clear">清空购物车</span>
       </div>
     </div>
@@ -45,7 +45,7 @@
             @click="changeCartItemInfo(shopId, item._id, item, -1)"
             >-</span
           >
-          {{ cartList?.[shopId]?.[item._id]?.count || 0 }}
+          {{ item.count || 0 }}
           <span
             class="product__number__plus"
             @click="changeCartItemInfo(shopId, item._id, item, 1)"
@@ -67,7 +67,7 @@ import { useCommonCartEffect } from './commonCartEffect'
 const useCartEffect = (shopId) => {
   const store = useStore()
   const cartList = store.state.cartList
-  const { changeCartItemInfo, clearCart, chooseAll } = useCommonCartEffect()
+  const { changeCartItemInfo } = useCommonCartEffect()
   const changeCartItemChecked = (productId) => {
     store.commit('changeCartItemChecked', {
       shopId,
@@ -81,7 +81,7 @@ const useCartEffect = (shopId) => {
     if (productList) {
       for (const i in productList) {
         const product = productList[i]
-        count += product.count
+        count += product.check ? product.count : 0
       }
     }
     return count
@@ -97,27 +97,11 @@ const useCartEffect = (shopId) => {
     }
     return count.toFixed(2)
   })
-  const cartTotal = computed(() => {
-    const productList = cartList[shopId]
-    let count = 0
-    if (productList) {
-      for (const i in productList) {
-        const product = productList[i]
-        count += product.check ? product.count : 0
-      }
-    }
-    return count
-  })
-  const allChecked = computed(() => {
-    console.log(cartTotal.value, total.value)
-    return cartTotal.value === total.value
-  })
-
   const productList = computed(() => {
     const productList = cartList[shopId] || []
     return productList
   })
-  return { total, price, productList, cartTotal, cartList, changeCartItemInfo, changeCartItemChecked, clearCart, chooseAll, allChecked }
+  return { total, price, productList, changeCartItemInfo, changeCartItemChecked }
 }
 
 export default {
@@ -129,26 +113,16 @@ export default {
       total,
       price,
       productList,
-      cartTotal,
-      cartList,
       changeCartItemInfo,
-      changeCartItemChecked,
-      clearCart,
-      chooseAll,
-      allChecked
+      changeCartItemChecked
     } = useCartEffect(shopId)
     return {
       total,
       price,
       productList,
-      cartTotal,
-      cartList,
       changeCartItemInfo,
       shopId,
-      changeCartItemChecked,
-      clearCart,
-      chooseAll,
-      allChecked
+      changeCartItemChecked
     }
   }
 }
@@ -233,6 +207,7 @@ export default {
     display: flex;
     justify-content: space-between;
     padding: 0.12rem 0.16rem;
+    border-bottom: 1px solid $gray-bgColor;
     &__box {
       display: flex;
       align-items: center;
