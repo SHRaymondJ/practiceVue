@@ -1,6 +1,6 @@
 <template>
   <div class="cart">
-    <div class="cart__basket">
+    <div class="cart__basket" @click="switchProductsDisplay">
       <span class="cart__basket__number">{{ cartTotal }}</span>
       <img class="cart__basket__img" src="../../assets/shop/basket.svg" alt="" />
     </div>
@@ -12,10 +12,14 @@
       <div class="cart__button">去结算</div>
     </div>
   </div>
-  <div class="products">
-    <div class="products__all" v-if="total > 0">
+  <div class="mask"  v-if="showProducts" @click="switchProductsDisplay"/>
+  <div class="products" v-if="showProducts">
+    <div class="products__all">
       <div class="products__all__box" @click="chooseAll(shopId, allChecked)">
-        <span class="products__all__choose iconfont" v-html="allChecked ? '&#xe626;':'&#xe625;'"></span>
+        <span
+          class="products__all__choose iconfont"
+          v-html="allChecked ? '&#xe626;' : '&#xe625;'"
+        ></span>
         <span class="products__all__text">全选</span>
       </div>
       <div class="products__all__box" @click="clearCart(shopId)">
@@ -60,7 +64,7 @@
 <script>
 import { useStore } from 'vuex'
 import { useRoute } from 'vue-router'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useCommonCartEffect } from './commonCartEffect'
 
 // 获取购物车信息逻辑
@@ -68,11 +72,15 @@ const useCartEffect = (shopId) => {
   const store = useStore()
   const cartList = store.state.cartList
   const { changeCartItemInfo, clearCart, chooseAll } = useCommonCartEffect()
+  const showProducts = ref(false)
   const changeCartItemChecked = (productId) => {
     store.commit('changeCartItemChecked', {
       shopId,
       productId
     })
+  }
+  const switchProductsDisplay = () => {
+    showProducts.value = !showProducts.value
   }
   // 计算属性监控值
   const total = computed(() => {
@@ -117,7 +125,19 @@ const useCartEffect = (shopId) => {
     const productList = cartList[shopId] || []
     return productList
   })
-  return { total, price, productList, cartTotal, cartList, changeCartItemInfo, changeCartItemChecked, clearCart, chooseAll, allChecked }
+  return {
+    price,
+    productList,
+    cartTotal,
+    cartList,
+    changeCartItemInfo,
+    changeCartItemChecked,
+    clearCart,
+    chooseAll,
+    allChecked,
+    switchProductsDisplay,
+    showProducts
+  }
 }
 
 export default {
@@ -126,7 +146,6 @@ export default {
     const route = useRoute()
     const shopId = route.params.id
     const {
-      total,
       price,
       productList,
       cartTotal,
@@ -135,10 +154,11 @@ export default {
       changeCartItemChecked,
       clearCart,
       chooseAll,
-      allChecked
+      allChecked,
+      switchProductsDisplay,
+      showProducts
     } = useCartEffect(shopId)
     return {
-      total,
       price,
       productList,
       cartTotal,
@@ -148,7 +168,9 @@ export default {
       changeCartItemChecked,
       clearCart,
       chooseAll,
-      allChecked
+      allChecked,
+      switchProductsDisplay,
+      showProducts
     }
   }
 }
@@ -168,6 +190,7 @@ export default {
   height: 0.49rem;
   border-top: 1px solid $gray-bgColor;
   background: $bgColor;
+  z-index: 2;
   &__basket {
     position: relative;
     display: flex;
@@ -220,7 +243,16 @@ export default {
     text-align: center;
   }
 }
-
+.mask{
+  background: $content-fc;
+  opacity: 0.5;
+  z-index: 1;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
 .products {
   background-color: $bgColor;
   overflow-y: scroll;
@@ -228,6 +260,7 @@ export default {
   position: absolute;
   bottom: 0.5rem;
   left: 0;
+  z-index: 2;
   &__all {
     font-size: 0.14rem;
     display: flex;
